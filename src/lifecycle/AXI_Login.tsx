@@ -15,155 +15,50 @@ export function AXI_Login({ username, pattern, onLogin }: AXI_LoginProps) {
   const [attempts, setAttempts] = useState(0);
 
   const toggleCell = useCallback((idx: number) => {
-    setSelected((prev) =>
-      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
-    );
+    setSelected((prev) => prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]);
   }, []);
 
   const handleSubmit = useCallback(() => {
-    const a = [...pattern].sort().join(',');
-    const b = [...selected].sort().join(',');
-    if (a === b) {
-      onLogin();
-    } else {
-      setAttempts((prev) => prev + 1);
-      setError(`AUTHENTICATION FAILED [ATTEMPT ${attempts + 1}]`);
-      setSelected([]);
-    }
+    if ([...pattern].sort().join(',') === [...selected].sort().join(',')) { onLogin(); }
+    else { setAttempts((prev) => prev + 1); setError(`Authentication failed (attempt ${attempts + 1})`); setSelected([]); }
   }, [pattern, selected, onLogin, attempts]);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        background: '#000000',
-        color: '#FFFFFF',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: "'Courier New', 'Consolas', monospace",
-      }}
-    >
-      {/* Logo */}
-      <div
-        className="axi-display"
-        style={{ fontSize: 24, marginBottom: 8 }}
-      >
-        AXINOM
-      </div>
-      <div
-        style={{
-          fontSize: 10,
-          letterSpacing: '0.6em',
-          textTransform: 'uppercase',
-          marginBottom: 48,
-          opacity: 0.7,
-        }}
-      >
-        WEB DESKTOP ENVIRONMENT
-      </div>
+    <div style={{ width: '100%', height: '100%', background: '#020617', color: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif" }}>
+      {/* Background glow */}
+      <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-      {/* Login box */}
-      <div
-        style={{
-          border: '3px solid #FFFFFF',
-          padding: 32,
-          boxShadow: '8px 8px 0px #FFFFFF',
-          minWidth: 320,
-        }}
-      >
-        <div
-          style={{
-            textAlign: 'center',
-            marginBottom: 24,
-          }}
-        >
-          <div style={{ fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 8 }}>
-            USER IDENTITY
-          </div>
-          <div
-            className="axi-display"
-            style={{ fontSize: 16 }}
-          >
-            {username}
-          </div>
+      <div className="axi-gradient-text" style={{ fontSize: 36, fontWeight: 900, marginBottom: 4, letterSpacing: '-0.02em' }}>AXINOM</div>
+      <div style={{ fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 48, color: '#475569' }}>Web Desktop Environment</div>
+
+      <div style={{
+        background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(16px)', border: '1px solid rgba(148, 163, 184, 0.1)',
+        borderRadius: 16, padding: 32, minWidth: 320, boxShadow: '0 8px 32px rgba(0,0,0,0.4)', textAlign: 'center',
+      }}>
+        {/* Avatar */}
+        <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #06b6d4, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, margin: '0 auto 12px' }}>
+          {username[0].toUpperCase()}
         </div>
+        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>{username}</div>
+        <div style={{ fontSize: 11, color: '#475569', marginBottom: 20 }}>Enter security pattern</div>
 
-        <div
-          style={{
-            fontSize: 11,
-            textAlign: 'center',
-            marginBottom: 16,
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-          }}
-        >
-          ENTER BIOMETRIC PATTERN
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${GRID_SIZE}, 48px)`,
-            gridTemplateRows: `repeat(${GRID_SIZE}, 48px)`,
-            gap: 0,
-            border: '3px solid #FFFFFF',
-            width: 'fit-content',
-            margin: '0 auto 16px auto',
-          }}
-        >
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${GRID_SIZE}, 48px)`, gridTemplateRows: `repeat(${GRID_SIZE}, 48px)`, gap: 6, width: 'fit-content', margin: '0 auto 16px auto' }}>
           {Array.from({ length: CELLS }).map((_, i) => (
-            <div
-              key={i}
-              onClick={() => toggleCell(i)}
-              style={{
-                width: 48,
-                height: 48,
-                background: selected.includes(i) ? '#FFFFFF' : '#000000',
-                border: '3px solid #FFFFFF',
-                cursor: 'pointer',
-              }}
-            />
+            <div key={i} onClick={() => toggleCell(i)} style={{
+              width: 48, height: 48, borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s ease',
+              background: selected.includes(i) ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' : 'rgba(15, 23, 42, 0.6)',
+              border: selected.includes(i) ? '2px solid rgba(6, 182, 212, 0.5)' : '2px solid rgba(148, 163, 184, 0.1)',
+              boxShadow: selected.includes(i) ? '0 0 12px rgba(6, 182, 212, 0.2)' : 'none',
+            }} />
           ))}
         </div>
 
-        {error && (
-          <div
-            style={{
-              border: '3px solid #FFFFFF',
-              padding: 8,
-              textAlign: 'center',
-              fontSize: 11,
-              marginBottom: 16,
-              letterSpacing: '0.2em',
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {error && <div style={{ fontSize: 12, color: '#f43f5e', marginBottom: 12, padding: '8px 12px', borderRadius: 8, background: 'rgba(244, 63, 94, 0.1)' }}>{error}</div>}
 
-        <button
-          className="axi-btn"
-          style={{ width: '100%', fontSize: 11, padding: '8px 16px' }}
-          onClick={handleSubmit}
-        >
-          AUTHENTICATE
-        </button>
+        <button className="axi-btn-primary" style={{ width: '100%', padding: '10px 16px' }} onClick={handleSubmit}>Authenticate</button>
       </div>
 
-      <div
-        style={{
-          marginTop: 32,
-          fontSize: 10,
-          opacity: 0.5,
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-        }}
-      >
-        AXINOM SYSTEMS CORP. // ALL RIGHTS RESERVED
-      </div>
+      <div style={{ marginTop: 32, fontSize: 10, color: '#334155', letterSpacing: '0.2em' }}>AXINOM SYSTEMS CORP.</div>
     </div>
   );
 }

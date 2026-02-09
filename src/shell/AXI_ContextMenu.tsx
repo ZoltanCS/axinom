@@ -18,25 +18,15 @@ export function AXI_ContextMenu() {
   const [menu, setMenu] = useState<ContextMenuState | null>(null);
 
   useEffect(() => {
-    const unsub = eventBus.on('contextmenu:show', (data) => {
-      const d = data as ContextMenuState;
-      setMenu(d);
-    });
+    const unsub = eventBus.on('contextmenu:show', (data) => setMenu(data as ContextMenuState));
     return unsub;
   }, [eventBus]);
 
-  // Close on any click outside
   useEffect(() => {
     if (!menu) return;
     const handler = () => setMenu(null);
-    // Delay to not immediately close
-    const timer = setTimeout(() => {
-      globalThis.addEventListener('mousedown', handler);
-    }, 50);
-    return () => {
-      clearTimeout(timer);
-      globalThis.removeEventListener('mousedown', handler);
-    };
+    const timer = setTimeout(() => { globalThis.addEventListener('mousedown', handler); }, 50);
+    return () => { clearTimeout(timer); globalThis.removeEventListener('mousedown', handler); };
   }, [menu]);
 
   const handleAction = useCallback((item: ContextMenuItem) => {
@@ -44,22 +34,14 @@ export function AXI_ContextMenu() {
     switch (item.action) {
       case 'open-editor':
         spawnApp('editor');
-        if (item.path) {
-          setTimeout(() => eventBus.emit('file:open', { path: item.path }), 100);
-        }
+        if (item.path) setTimeout(() => eventBus.emit('file:open', { path: item.path }), 100);
         break;
-      case 'open-canvas':
-        spawnApp('canvas');
-        break;
+      case 'open-canvas': spawnApp('canvas'); break;
       case 'navigate':
-        if (item.path) {
-          eventBus.emit('files:navigate', { path: item.path });
-        }
+        if (item.path) eventBus.emit('files:navigate', { path: item.path });
         break;
       case 'delete':
-        if (item.path) {
-          vfs.delete(item.path);
-        }
+        if (item.path) vfs.delete(item.path);
         break;
       case 'export':
         if (item.path) {
@@ -68,73 +50,42 @@ export function AXI_ContextMenu() {
             const name = item.path.split('/').pop() || 'export.txt';
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = name;
-            a.click();
+            const a = document.createElement('a'); a.href = url; a.download = name; a.click();
             URL.revokeObjectURL(url);
           }
         }
         break;
-      case 'open-terminal':
-        spawnApp('terminal');
-        break;
-      case 'open-files':
-        spawnApp('files');
-        break;
-      case 'open-taskmanager':
-        spawnApp('taskmanager');
-        break;
+      case 'open-terminal': spawnApp('terminal'); break;
+      case 'open-files': spawnApp('files'); break;
+      case 'open-taskmanager': spawnApp('taskmanager'); break;
+      case 'open-settings': spawnApp('settings'); break;
     }
   }, [spawnApp, eventBus, vfs]);
 
   if (!menu) return null;
 
-  // Clamp menu position to viewport
   const menuWidth = 200;
-  const menuHeight = menu.items.length * 32 + 6;
+  const menuHeight = menu.items.length * 36 + 12;
   const x = Math.min(menu.x, window.innerWidth - menuWidth - 8);
   const y = Math.min(menu.y, window.innerHeight - menuHeight - 56);
 
   return (
-    <div
-      className="axi-ctx-open"
-      onMouseDown={(e) => e.stopPropagation()}
+    <div className="axi-ctx-open" onMouseDown={(e) => e.stopPropagation()}
       style={{
-        position: 'fixed',
-        left: x,
-        top: y,
-        background: '#000000',
-        border: '3px solid #FFFFFF',
-        boxShadow: '8px 8px 0px #FFFFFF',
-        zIndex: 100000,
-        minWidth: menuWidth,
-      }}
-    >
+        position: 'fixed', left: x, top: y, zIndex: 100000, minWidth: menuWidth, padding: 4,
+        background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(148, 163, 184, 0.15)', borderRadius: 10,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+      }}>
       {menu.items.map((item, i) => (
-        <div
-          key={i}
-          onClick={() => handleAction(item)}
+        <div key={i} onClick={() => handleAction(item)}
           style={{
-            padding: '8px 16px',
-            cursor: 'pointer',
-            fontFamily: "'Courier New', monospace",
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: '#FFFFFF',
-            borderBottom: i < menu.items.length - 1 ? '1px solid rgba(255,255,255,0.2)' : 'none',
+            padding: '8px 14px', cursor: 'pointer', borderRadius: 6,
+            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 400, color: '#e2e8f0',
+            transition: 'background 0.1s ease',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#FFFFFF';
-            e.currentTarget.style.color = '#000000';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#000000';
-            e.currentTarget.style.color = '#FFFFFF';
-          }}
-        >
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6, 182, 212, 0.1)'; e.currentTarget.style.color = '#06b6d4'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#e2e8f0'; }}>
           {item.label}
         </div>
       ))}

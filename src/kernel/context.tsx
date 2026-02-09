@@ -3,6 +3,7 @@ import type { KernelState, KernelAction, AppId, EventBus, WindowGeometry } from 
 import { kernelReducer, initialKernelState } from './reducer';
 import { createEventBus } from './eventbus';
 import { vfs, type VirtualFileSystem } from '../vfs';
+import { APP_RESOURCE_COSTS } from '../styles/theme';
 
 interface KernelContextValue {
   state: KernelState;
@@ -17,12 +18,13 @@ interface KernelContextValue {
 const KernelContext = createContext<KernelContextValue | null>(null);
 
 const APP_TITLES: Record<AppId, string> = {
-  terminal: 'AXI_TERMINAL',
-  editor: 'AXI_EDITOR',
-  canvas: 'AXI_CANVAS',
-  navigator: 'AXI_NAVIGATOR',
-  files: 'AXI_FILES',
-  taskmanager: 'AXI_TASKMAN',
+  terminal: 'Terminal',
+  editor: 'Editor',
+  canvas: 'Canvas',
+  navigator: 'Navigator',
+  files: 'Files',
+  taskmanager: 'Task Manager',
+  settings: 'Settings',
 };
 
 export function KernelProvider({ children }: { children: ReactNode }) {
@@ -31,7 +33,15 @@ export function KernelProvider({ children }: { children: ReactNode }) {
 
   const spawnApp = useCallback(
     (appId: AppId, geometry?: Partial<WindowGeometry>) => {
-      dispatch({ type: 'SPAWN_PROCESS', appId, title: APP_TITLES[appId], geometry });
+      const costs = APP_RESOURCE_COSTS[appId] || { ramMB: 64, cpuBase: 2 };
+      dispatch({
+        type: 'SPAWN_PROCESS',
+        appId,
+        title: APP_TITLES[appId],
+        geometry,
+        ramMB: costs.ramMB,
+        cpuBase: costs.cpuBase,
+      });
       eventBus.emit('process:spawn', { appId });
     },
     [dispatch, eventBus]

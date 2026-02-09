@@ -1,11 +1,12 @@
 import type { KernelState, KernelAction, WindowInfo } from './types';
 
-const DEFAULT_WIDTH = 640;
-const DEFAULT_HEIGHT = 480;
+const DEFAULT_WIDTH = 700;
+const DEFAULT_HEIGHT = 500;
+const TASKBAR_HEIGHT = 56;
 
 function getDefaultPosition(state: KernelState): { x: number; y: number } {
-  const offset = (state.windows.length % 8) * 32;
-  return { x: 80 + offset, y: 80 + offset };
+  const offset = (state.windows.length % 6) * 40;
+  return { x: 100 + offset, y: 60 + offset };
 }
 
 export const initialKernelState: KernelState = {
@@ -33,6 +34,8 @@ export function kernelReducer(state: KernelState, action: KernelAction): KernelS
         appId: action.appId,
         title: action.title,
         startedAt: Date.now(),
+        ramMB: action.ramMB,
+        cpuBase: action.cpuBase,
       };
 
       const newWindow: WindowInfo = {
@@ -83,7 +86,7 @@ export function kernelReducer(state: KernelState, action: KernelAction): KernelS
       return {
         ...state,
         windows: state.windows.map((w) =>
-          w.pid === action.pid ? { ...w, state: 'minimized', focused: false } : w
+          w.pid === action.pid ? { ...w, state: 'minimized' as const, focused: false } : w
         ),
       };
     }
@@ -95,9 +98,9 @@ export function kernelReducer(state: KernelState, action: KernelAction): KernelS
           w.pid === action.pid
             ? {
                 ...w,
-                state: 'maximized',
-                prevGeometry: w.geometry,
-                geometry: { x: 0, y: 0, w: window.innerWidth, h: window.innerHeight - 48 },
+                state: 'maximized' as const,
+                prevGeometry: w.prevGeometry ?? w.geometry,
+                geometry: { x: 0, y: 0, w: window.innerWidth, h: window.innerHeight - TASKBAR_HEIGHT },
                 focused: true,
                 zIndex: state.topZIndex + 1,
               }
@@ -114,9 +117,34 @@ export function kernelReducer(state: KernelState, action: KernelAction): KernelS
           w.pid === action.pid
             ? {
                 ...w,
-                state: 'normal',
+                state: 'normal' as const,
                 geometry: w.prevGeometry ?? w.geometry,
                 prevGeometry: null,
+                focused: true,
+                zIndex: state.topZIndex + 1,
+              }
+            : { ...w, focused: false }
+        ),
+        topZIndex: state.topZIndex + 1,
+      };
+    }
+
+    case 'SNAP_WINDOW': {
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight - TASKBAR_HEIGHT;
+      const snapGeo = action.side === 'left'
+        ? { x: 4, y: 4, w: Math.floor(screenW / 2) - 6, h: screenH - 8 }
+        : { x: Math.floor(screenW / 2) + 2, y: 4, w: Math.floor(screenW / 2) - 6, h: screenH - 8 };
+
+      return {
+        ...state,
+        windows: state.windows.map((w) =>
+          w.pid === action.pid
+            ? {
+                ...w,
+                state: (action.side === 'left' ? 'snapped-left' : 'snapped-right') as WindowInfo['state'],
+                prevGeometry: w.prevGeometry ?? w.geometry,
+                geometry: snapGeo,
                 focused: true,
                 zIndex: state.topZIndex + 1,
               }

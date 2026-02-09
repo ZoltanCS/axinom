@@ -47,142 +47,43 @@ export function AXI_Navigator() {
     }
   }, [historyIndex, history]);
 
-  const navBtnStyle: React.CSSProperties = {
-    background: '#000000',
-    color: '#FFFFFF',
+  const navBtn: React.CSSProperties = {
+    background: 'transparent',
+    color: '#94a3b8',
     border: 'none',
-    borderRight: '3px solid #FFFFFF',
-    padding: '0 12px',
+    padding: '0 10px',
     height: '100%',
-    fontFamily: "'Arial Black', sans-serif",
-    fontWeight: 900,
-    fontSize: 14,
+    fontSize: 16,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
+    transition: 'color 0.15s ease',
   };
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#000000',
-      }}
-    >
-      {/* Navigation bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          borderBottom: '3px solid #FFFFFF',
-          height: 36,
-          flexShrink: 0,
-        }}
-      >
-        <button
-          onClick={goBack}
-          style={{
-            ...navBtnStyle,
-            opacity: historyIndex > 0 ? 1 : 0.3,
-          }}
-          disabled={historyIndex === 0}
-        >
-          ◀
-        </button>
-        <button
-          onClick={goForward}
-          style={{
-            ...navBtnStyle,
-            opacity: historyIndex < history.length - 1 ? 1 : 0.3,
-          }}
-          disabled={historyIndex >= history.length - 1}
-        >
-          ▶
-        </button>
-        <button
-          onClick={() => navigate(url)}
-          style={navBtnStyle}
-        >
-          ↻
-        </button>
-
-        {/* Address bar */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-            borderRight: '3px solid #FFFFFF',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'Arial Black', sans-serif",
-              fontWeight: 900,
-              fontSize: 8,
-              letterSpacing: '0.6em',
-              textTransform: 'uppercase',
-              padding: '0 8px',
-              color: '#FFFFFF',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            A X I N O M
-          </span>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#0a0e1a' }}>
+      <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', height: 40, flexShrink: 0, background: 'rgba(15, 23, 42, 0.5)', padding: '0 8px', gap: 4 }}>
+        <button onClick={goBack} style={{ ...navBtn, opacity: historyIndex > 0 ? 1 : 0.3 }} disabled={historyIndex === 0}>◀</button>
+        <button onClick={goForward} style={{ ...navBtn, opacity: historyIndex < history.length - 1 ? 1 : 0.3 }} disabled={historyIndex >= history.length - 1}>▶</button>
+        <button onClick={() => navigate(url)} style={navBtn}>↻</button>
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', height: 28,
+          background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(148, 163, 184, 0.15)', borderRadius: 8, overflow: 'hidden',
+        }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 9, letterSpacing: '0.15em', padding: '0 8px', color: '#06b6d4', whiteSpace: 'nowrap' }}>AXINOM</span>
           <input
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') navigate(inputUrl);
-            }}
-            style={{
-              flex: 1,
-              background: '#000000',
-              color: '#FFFFFF',
-              border: 'none',
-              borderLeft: '3px solid #FFFFFF',
-              fontFamily: "'Courier New', monospace",
-              fontSize: 12,
-              padding: '0 8px',
-              height: '100%',
-              outline: 'none',
-            }}
+            onKeyDown={(e) => { if (e.key === 'Enter') navigate(inputUrl); }}
+            style={{ flex: 1, background: 'transparent', color: '#e2e8f0', border: 'none', borderLeft: '1px solid rgba(148, 163, 184, 0.1)', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '0 8px', height: '100%', outline: 'none' }}
             spellCheck={false}
           />
         </div>
-
-        {loading && (
-          <span
-            style={{
-              fontFamily: 'monospace',
-              fontSize: 10,
-              padding: '0 8px',
-              color: '#FFFFFF',
-            }}
-          >
-            ▓▓▓
-          </span>
-        )}
+        {loading && <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#06b6d4', padding: '0 8px' }}>Loading...</span>}
       </div>
-
-      {/* Content */}
-      <div style={{ flex: 1, position: 'relative', background: '#FFFFFF' }}>
-        <iframe
-          ref={iframeRef}
-          src={url}
-          onLoad={() => setLoading(false)}
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          title="AXI_NAVIGATOR"
-        />
+      <div style={{ flex: 1, position: 'relative', background: '#fff' }}>
+        <iframe ref={iframeRef} src={url} onLoad={() => setLoading(false)} sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          style={{ width: '100%', height: '100%', border: 'none' }} title="Navigator" />
       </div>
     </div>
   );
