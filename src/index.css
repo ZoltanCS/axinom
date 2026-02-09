@@ -139,3 +139,75 @@ html, body, #root {
 .axi-cursor-blink {
   animation: axi-blink 1s step-end infinite;
 }
+
+/* Window open: geometric scaling from center point */
+@keyframes axi-window-open {
+  0% {
+    transform: scale(0.01);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.axi-window-open {
+  animation: axi-window-open 200ms cubic-bezier(0, 0, 0.2, 1) forwards;
+  transform-origin: center center;
+}
+
+/* Focus pulse: border inversion flash */
+@keyframes axi-focus-pulse {
+  0% { box-shadow: 8px 8px 0px #FFFFFF, inset 0 0 0 0 #FFFFFF; }
+  25% { box-shadow: 8px 8px 0px #FFFFFF, inset 0 0 0 3px #FFFFFF; }
+  50% { box-shadow: 8px 8px 0px #FFFFFF, inset 0 0 0 0 #FFFFFF; }
+  100% { box-shadow: 8px 8px 0px #FFFFFF; }
+}
+
+.axi-focus-pulse {
+  animation: axi-focus-pulse 300ms step-end forwards;
+}
+
+/* Boot logo pixel assembly */
+@keyframes axi-logo-build {
+  0% { clip-path: inset(100% 0 0 0); }
+  25% { clip-path: inset(75% 0 0 0); }
+  50% { clip-path: inset(50% 0 0 0); }
+  75% { clip-path: inset(25% 0 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+.axi-logo-build {
+  animation: axi-logo-build 1.5s steps(8) forwards;
+}
+
+/* Context menu fade */
+@keyframes axi-ctx-open {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.axi-ctx-open {
+  animation: axi-ctx-open 100ms step-end forwards;
+}
+
+/* Widget pulse */
+@keyframes axi-pulse-line {
+  0% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.3); }
+}
+
+/* Geometric background pattern */
+.axi-geo-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(45deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 8px 8px, 8px 8px, 16px 16px;
+}

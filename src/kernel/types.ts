@@ -1,4 +1,4 @@
-export type AppId = 'terminal' | 'editor' | 'canvas' | 'navigator';
+export type AppId = 'terminal' | 'editor' | 'canvas' | 'navigator' | 'files' | 'taskmanager';
 
 export interface ProcessInfo {
   pid: number;

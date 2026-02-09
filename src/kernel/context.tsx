@@ -21,6 +21,8 @@ const APP_TITLES: Record<AppId, string> = {
   editor: 'AXI_EDITOR',
   canvas: 'AXI_CANVAS',
   navigator: 'AXI_NAVIGATOR',
+  files: 'AXI_FILES',
+  taskmanager: 'AXI_TASKMAN',
 };
 
 export function KernelProvider({ children }: { children: ReactNode }) {

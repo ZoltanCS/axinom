@@ -1,4 +1,4 @@
-import { useCallback, useRef, memo, type ReactNode, type MouseEvent } from 'react';
+import { useCallback, useRef, useState, useEffect, memo, type ReactNode, type MouseEvent } from 'react';
 import { useKernel } from '../kernel';
 import type { WindowInfo } from '../kernel';
 
@@ -34,6 +34,25 @@ export const AXI_Window = memo(function AXI_Window({ window: win, children }: AX
     startY: number;
     origGeo: { x: number; y: number; w: number; h: number };
   } | null>(null);
+  const [isNew, setIsNew] = useState(true);
+  const [isPulsing, setIsPulsing] = useState(false);
+  const prevFocused = useRef(win.focused);
+
+  // Window open animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsNew(false), 250);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Focus pulse: detect when window becomes focused
+  useEffect(() => {
+    if (win.focused && !prevFocused.current && !isNew) {
+      setIsPulsing(true);
+      const timer = setTimeout(() => setIsPulsing(false), 300);
+      return () => clearTimeout(timer);
+    }
+    prevFocused.current = win.focused;
+  }, [win.focused, isNew]);
 
   const handleMouseDownTitle = useCallback(
     (e: MouseEvent) => {
@@ -54,7 +73,6 @@ export const AXI_Window = memo(function AXI_Window({ window: win, children }: AX
         let newX = dragRef.current.origX + dx;
         let newY = dragRef.current.origY + dy;
 
-        // Collision: keep within viewport
         newX = Math.max(0, Math.min(newX, globalThis.innerWidth - win.geometry.w));
         newY = Math.max(0, Math.min(newY, globalThis.innerHeight - TASKBAR_HEIGHT - 40));
 
@@ -104,7 +122,6 @@ export const AXI_Window = memo(function AXI_Window({ window: win, children }: AX
           if (h > MIN_HEIGHT) y = origGeo.y + dy;
         }
 
-        // Clamp
         x = Math.max(0, x);
         y = Math.max(0, y);
 
@@ -158,8 +175,11 @@ export const AXI_Window = memo(function AXI_Window({ window: win, children }: AX
     { dir: 'se', style: { bottom: 0, right: 0, width: RESIZE_HANDLE_SIZE, height: RESIZE_HANDLE_SIZE } },
   ];
 
+  const animClass = isNew ? 'axi-window-open' : isPulsing ? 'axi-focus-pulse' : '';
+
   return (
     <div
+      className={animClass}
       onMouseDown={handleFocus}
       style={{
         position: 'absolute',
@@ -168,11 +188,13 @@ export const AXI_Window = memo(function AXI_Window({ window: win, children }: AX
         width: w,
         height: h,
         zIndex: win.zIndex,
-        border: `3px solid ${win.focused ? '#FFFFFF' : '#FFFFFF'}`,
+        border: '3px solid #FFFFFF',
         background: '#000000',
         display: 'flex',
         flexDirection: 'column',
         boxShadow: win.focused ? '8px 8px 0px #FFFFFF' : 'none',
+        willChange: 'transform',
+        contain: 'layout style',
       }}
     >
       {/* Title bar */}

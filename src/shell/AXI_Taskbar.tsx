@@ -20,6 +20,15 @@ function SystemClock() {
   );
 }
 
+const MENU_APPS: Array<{ id: AppId; label: string; icon: string }> = [
+  { id: 'terminal', label: 'AXI_TERMINAL', icon: '>_' },
+  { id: 'editor', label: 'AXI_EDITOR', icon: '¶' },
+  { id: 'canvas', label: 'AXI_CANVAS', icon: '◩' },
+  { id: 'navigator', label: 'AXI_NAVIGATOR', icon: '◎' },
+  { id: 'files', label: 'AXI_FILES', icon: '▣' },
+  { id: 'taskmanager', label: 'AXI_TASKMAN', icon: '▥' },
+];
+
 export function AXI_Taskbar() {
   const { state, dispatch, spawnApp, focusWindow } = useKernel();
   const [showMenu, setShowMenu] = useState(false);
@@ -60,7 +69,7 @@ export function AXI_Taskbar() {
             border: '3px solid #FFFFFF',
             boxShadow: '8px 8px 0px #FFFFFF',
             zIndex: 99999,
-            minWidth: 200,
+            minWidth: 220,
           }}
         >
           <div
@@ -77,14 +86,7 @@ export function AXI_Taskbar() {
           >
             APPLICATIONS
           </div>
-          {(
-            [
-              { id: 'terminal' as AppId, label: 'AXI_TERMINAL', icon: '>_' },
-              { id: 'editor' as AppId, label: 'AXI_EDITOR', icon: '¶' },
-              { id: 'canvas' as AppId, label: 'AXI_CANVAS', icon: '◩' },
-              { id: 'navigator' as AppId, label: 'AXI_NAVIGATOR', icon: '◎' },
-            ] as const
-          ).map(({ id, label, icon }) => (
+          {MENU_APPS.map(({ id, label, icon }) => (
             <div
               key={id}
               onClick={() => handleAppLaunch(id)}
@@ -97,6 +99,7 @@ export function AXI_Taskbar() {
                 fontFamily: "'Courier New', monospace",
                 fontSize: 12,
                 borderBottom: '1px solid rgba(255,255,255,0.2)',
+                color: '#FFFFFF',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#FFFFFF';
@@ -165,7 +168,7 @@ export function AXI_Taskbar() {
                 fontSize: 11,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                maxWidth: 200,
+                maxWidth: 180,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 display: 'flex',

@@ -2,16 +2,22 @@ import { useCallback, useMemo } from 'react';
 import { useKernel, type AppId } from '../kernel';
 import { AXI_Window } from '../windowing';
 import { AXI_Taskbar } from './AXI_Taskbar';
+import { AXI_WidgetLayer } from './AXI_Widgets';
+import { AXI_ContextMenu } from './AXI_ContextMenu';
 import { AXI_Terminal } from '../apps/terminal/AXI_Terminal';
 import { AXI_Editor } from '../apps/editor/AXI_Editor';
 import { AXI_Canvas } from '../apps/canvas/AXI_Canvas';
 import { AXI_Navigator } from '../apps/navigator/AXI_Navigator';
+import { AXI_FileManager } from '../apps/files/AXI_FileManager';
+import { AXI_TaskManager } from '../apps/taskmanager/AXI_TaskManager';
 
 const DESKTOP_ICONS: Array<{ appId: AppId; label: string; icon: string }> = [
   { appId: 'terminal', label: 'TERMINAL', icon: '>_' },
   { appId: 'editor', label: 'EDITOR', icon: '¶' },
   { appId: 'canvas', label: 'CANVAS', icon: '◩' },
   { appId: 'navigator', label: 'NAVIGATOR', icon: '◎' },
+  { appId: 'files', label: 'FILES', icon: '▣' },
+  { appId: 'taskmanager', label: 'TASKS', icon: '▥' },
 ];
 
 function AppContent({ appId }: { appId: AppId }) {
@@ -24,11 +30,15 @@ function AppContent({ appId }: { appId: AppId }) {
       return <AXI_Canvas />;
     case 'navigator':
       return <AXI_Navigator />;
+    case 'files':
+      return <AXI_FileManager />;
+    case 'taskmanager':
+      return <AXI_TaskManager />;
   }
 }
 
 export function AXI_Desktop() {
-  const { state, spawnApp } = useKernel();
+  const { state, spawnApp, eventBus } = useKernel();
 
   const handleIconDoubleClick = useCallback(
     (appId: AppId) => {
@@ -40,6 +50,23 @@ export function AXI_Desktop() {
   const sortedWindows = useMemo(
     () => [...state.windows].sort((a, b) => a.zIndex - b.zIndex),
     [state.windows]
+  );
+
+  // Desktop right-click context menu
+  const handleDesktopContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      eventBus.emit('contextmenu:show', {
+        x: e.clientX,
+        y: e.clientY,
+        items: [
+          { label: 'OPEN TERMINAL', action: 'open-terminal' },
+          { label: 'OPEN FILE MANAGER', action: 'open-files' },
+          { label: 'OPEN TASK MANAGER', action: 'open-taskmanager' },
+        ],
+      });
+    },
+    [eventBus]
   );
 
   return (
@@ -55,19 +82,12 @@ export function AXI_Desktop() {
       }}
     >
       {/* Desktop area */}
-      <div style={{ flex: 1, position: 'relative' }}>
-        {/* Grid pattern overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-            backgroundSize: '8px 8px',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
+      <div
+        style={{ flex: 1, position: 'relative' }}
+        onContextMenu={handleDesktopContextMenu}
+      >
+        {/* Geometric background pattern */}
+        <div className="axi-geo-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }} />
 
         {/* Desktop icons */}
         <div
@@ -75,8 +95,8 @@ export function AXI_Desktop() {
             position: 'absolute',
             top: 16,
             left: 16,
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 80px)',
             gap: 8,
             zIndex: 1,
           }}
@@ -138,6 +158,9 @@ export function AXI_Desktop() {
           ))}
         </div>
 
+        {/* Widget layer */}
+        <AXI_WidgetLayer />
+
         {/* Windows */}
         {sortedWindows.map((win) => (
           <AXI_Window key={win.pid} window={win}>
@@ -148,6 +171,9 @@ export function AXI_Desktop() {
 
       {/* Taskbar */}
       <AXI_Taskbar />
+
+      {/* Context menu overlay */}
+      <AXI_ContextMenu />
     </div>
   );
 }

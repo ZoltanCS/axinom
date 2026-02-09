@@ -90,7 +90,8 @@ export function AXI_Terminal() {
           addOutput('  echo [text]   Print text');
           addOutput('  clear         Clear terminal');
           addOutput('  neofetch      System information');
-          addOutput('  open [app]    Open application (terminal/editor/canvas/navigator)');
+          addOutput('  open [app]    Open application');
+          addOutput('                (terminal/editor/canvas/navigator/files/taskmanager)');
           addOutput('  reboot        Reboot system');
           addOutput('');
           break;
@@ -204,12 +205,14 @@ export function AXI_Terminal() {
 
         case 'open': {
           const appName = rest[0];
-          if (appName === 'terminal' || appName === 'editor' || appName === 'canvas' || appName === 'navigator') {
-            spawnApp(appName);
+          const validApps = ['terminal', 'editor', 'canvas', 'navigator', 'files', 'taskmanager'] as const;
+          type ValidApp = typeof validApps[number];
+          if (appName && validApps.includes(appName as ValidApp)) {
+            spawnApp(appName as ValidApp);
             addOutput(`Opening ${appName}...`);
           } else {
-            addOutput(`open: unknown application '${appName}'`);
-            addOutput('Available: terminal, editor, canvas, navigator');
+            addOutput(`open: unknown application '${appName || ''}'`);
+            addOutput('Available: ' + validApps.join(', '));
           }
           break;
         }
