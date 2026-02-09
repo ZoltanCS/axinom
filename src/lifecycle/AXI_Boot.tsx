@@ -52,8 +52,9 @@ export function AXI_Boot({ onComplete }: AXI_BootProps) {
     let idx = 0;
     const interval = setInterval(() => {
       if (idx < POST_MESSAGES.length) {
-        setLines((prev) => [...prev, POST_MESSAGES[idx]]);
+        const msg = POST_MESSAGES[idx];
         idx++;
+        setLines((prev) => [...prev, msg]);
       } else { clearInterval(interval); setDone(true); }
     }, 45);
     return () => clearInterval(interval);
