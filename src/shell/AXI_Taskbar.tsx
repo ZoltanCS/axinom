@@ -12,9 +12,16 @@ function SystemClock() {
 const MENU_APPS: Array<{ id: AppId; label: string; icon: string }> = [
   { id: 'terminal', label: 'Terminal', icon: '>_' },
   { id: 'editor', label: 'Editor', icon: '¶' },
-  { id: 'canvas', label: 'Canvas', icon: '◩' },
-  { id: 'navigator', label: 'Navigator', icon: '◎' },
   { id: 'files', label: 'Files', icon: '▣' },
+  { id: 'navigator', label: 'Navigator', icon: '◎' },
+  { id: 'calculator', label: 'Calculator', icon: '🔢' },
+  { id: 'calendar', label: 'Calendar', icon: '📅' },
+  { id: 'mediaplayer', label: 'Media Player', icon: '🎵' },
+  { id: 'imageviewer', label: 'Photos', icon: '🖼️' },
+  { id: 'store', label: 'App Store', icon: '🏪' },
+  { id: 'network', label: 'Network', icon: '📶' },
+  { id: 'help', label: 'Help', icon: '❓' },
+  { id: 'canvas', label: 'Canvas', icon: '◩' },
   { id: 'taskmanager', label: 'Task Manager', icon: '▥' },
   { id: 'settings', label: 'Settings', icon: '⚙' },
 ];

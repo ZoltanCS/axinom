@@ -11,6 +11,13 @@ import { AXI_Navigator } from '../apps/navigator/AXI_Navigator';
 import { AXI_FileManager } from '../apps/files/AXI_FileManager';
 import { AXI_TaskManager } from '../apps/taskmanager/AXI_TaskManager';
 import { AXI_Settings } from '../apps/settings/AXI_Settings';
+import { AXI_Calculator } from '../apps/calculator/AXI_Calculator';
+import { AXI_Calendar } from '../apps/calendar/AXI_Calendar';
+import { AXI_MediaPlayer } from '../apps/mediaplayer/AXI_MediaPlayer';
+import { AXI_ImageViewer } from '../apps/imageviewer/AXI_ImageViewer';
+import { AXI_Network } from '../apps/network/AXI_Network';
+import { AXI_Help } from '../apps/help/AXI_Help';
+import { AXI_AppStore } from '../apps/store/AXI_AppStore';
 
 const WALLPAPERS: Record<string, string> = {
   default: 'radial-gradient(ellipse at 20% 50%, rgba(6, 182, 212, 0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%), linear-gradient(180deg, #020617 0%, #0f172a 100%)',
@@ -24,10 +31,15 @@ const WALLPAPERS: Record<string, string> = {
 const DESKTOP_ICONS: Array<{ appId: AppId; label: string; icon: string }> = [
   { appId: 'terminal', label: 'Terminal', icon: '>_' },
   { appId: 'editor', label: 'Editor', icon: '¶' },
-  { appId: 'canvas', label: 'Canvas', icon: '◩' },
-  { appId: 'navigator', label: 'Navigator', icon: '◎' },
   { appId: 'files', label: 'Files', icon: '▣' },
-  { appId: 'taskmanager', label: 'Tasks', icon: '▥' },
+  { appId: 'navigator', label: 'Navigator', icon: '◎' },
+  { appId: 'calculator', label: 'Calculator', icon: '🔢' },
+  { appId: 'calendar', label: 'Calendar', icon: '📅' },
+  { appId: 'mediaplayer', label: 'Media', icon: '🎵' },
+  { appId: 'imageviewer', label: 'Photos', icon: '🖼️' },
+  { appId: 'store', label: 'App Store', icon: '🏪' },
+  { appId: 'network', label: 'Network', icon: '📶' },
+  { appId: 'help', label: 'Help', icon: '❓' },
   { appId: 'settings', label: 'Settings', icon: '⚙' },
 ];
 
@@ -40,6 +52,13 @@ function AppContent({ appId }: { appId: AppId }) {
     case 'files': return <AXI_FileManager />;
     case 'taskmanager': return <AXI_TaskManager />;
     case 'settings': return <AXI_Settings />;
+    case 'calculator': return <AXI_Calculator />;
+    case 'calendar': return <AXI_Calendar />;
+    case 'mediaplayer': return <AXI_MediaPlayer />;
+    case 'imageviewer': return <AXI_ImageViewer />;
+    case 'network': return <AXI_Network />;
+    case 'help': return <AXI_Help />;
+    case 'store': return <AXI_AppStore />;
   }
 }
 

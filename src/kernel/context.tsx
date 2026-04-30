@@ -25,6 +25,14 @@ const APP_TITLES: Record<AppId, string> = {
   files: 'Files',
   taskmanager: 'Task Manager',
   settings: 'Settings',
+  calculator: 'Calculator',
+  calendar: 'Calendar',
+  mediaplayer: 'Media Player',
+  imageviewer: 'Image Viewer',
+  notifier: 'Notifications',
+  network: 'Network',
+  help: 'Help Center',
+  store: 'App Store',
 };
 
 export function KernelProvider({ children }: { children: ReactNode }) {
